@@ -462,7 +462,7 @@ function toggleFirstPerson(%val)
 function toggleCamera(%val)
 {
    setMvExtras();
-   if (%val && $testCheats)
+   if (%val)
       commandToServer('ToggleCamera');
 }
 

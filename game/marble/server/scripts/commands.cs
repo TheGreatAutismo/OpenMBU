@@ -13,23 +13,20 @@
 
 function serverCmdToggleCamera(%client)
 {
-   if ($Server::TestCheats || $Server::ServerType $= "SinglePlayer")
+   %control = %client.getControlObject();
+   if (%control == %client.player)
    {
-      %control = %client.getControlObject();
-      if (%control == %client.player)
-      {
-         %control = %client.camera;
-         %control.mode = toggleCameraFly;
-         spectatorHud(false);
-      }
-      else
-      {
-         %control = %client.player;
-         %control.mode = observerFly;
-         spectatorHud(true);
-      }
-      %client.setControlObject(%control);
+      %control = %client.camera;
+      %control.mode = toggleCameraFly;
+      spectatorHud(false);
    }
+   else
+   {
+      %control = %client.player;
+      %control.mode = observerFly;
+      spectatorHud(true);
+   }
+   %client.setControlObject(%control);
 }
 
 function serverCmdDropPlayerAtCamera(%client)
