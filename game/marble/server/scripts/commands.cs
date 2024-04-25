@@ -20,11 +20,13 @@ function serverCmdToggleCamera(%client)
       {
          %control = %client.camera;
          %control.mode = toggleCameraFly;
+         spectatorHud(false);
       }
       else
       {
          %control = %client.player;
          %control.mode = observerFly;
+         spectatorHud(true);
       }
       %client.setControlObject(%control);
    }
@@ -85,7 +87,7 @@ function serverCmdSelectObject(%client, %mouseVec, %cameraPoint)
    // rangeEnd = camera point + length of selectable range
    %rangeEnd = VectorAdd(%cameraPoint, %mouseScaled);
 
-   // Search for anything that is selectable – below are some examples
+   // Search for anything that is selectable ï¿½ below are some examples
    %searchMasks = $TypeMasks::PlayerObjectType | $TypeMasks::CorpseObjectType |
       				$TypeMasks::ItemObjectType | $TypeMasks::TriggerObjectType;
 
@@ -119,4 +121,32 @@ function serverCmdStartTalking(%client)
 function serverCmdStopTalking(%client)
 {
    
+}
+
+//-----------------------------------------------------------------------------
+// Spectator Mode
+//-----------------------------------------------------------------------------
+
+function spectatorHud(%state)
+{
+   HUD_ShowPowerUp.setVisible(%state);
+   BoostBar.setVisible(%state);
+
+   if( %state == false )
+   {
+      GemsTotalOne.setVisible(%state);
+      GemsTotalTen.setVisible(%state);
+      GemsTotalHundred.setVisible(%state);
+      GemsSlash.setVisible(%state);
+      GemsFoundOne.setVisible(%state);
+      GemsFoundTen.setVisible(%state);
+      GemsFoundHundred.setVisible(%state);
+      HUD_ShowGem.setVisible(%state);
+   }
+   else
+   {
+      PlayGui.setGemCount(PlayGui.gemCount);
+      PlayGui.setMaxGems(PlayGui.maxGems);
+      PlayGui.setPoints(PlayGui.points);
+   }
 }
