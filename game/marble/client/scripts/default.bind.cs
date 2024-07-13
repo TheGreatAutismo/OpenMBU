@@ -532,6 +532,55 @@ function TeamChat(%val)
       newMessageHud.open("TEAM");
 }
 
+//Taunts by Connie - done exactly like in PQ btw
+function taunt1(%val)
+{
+   if(%val && $Pref::Chat::LineTime > 0)
+   {
+      playTaunt(0);
+   }
+}
+
+function taunt2(%val)
+{
+   if(%val && $Pref::Chat::LineTime > 0)
+   {
+      playTaunt(1);
+   }
+}
+
+function taunt3(%val)
+{
+   if(%val && $Pref::Chat::LineTime > 0)
+   {
+      playTaunt(2);
+   }
+}
+
+function taunt4(%val)
+{
+   if(%val && $Pref::Chat::LineTime > 0)
+   {
+      playTaunt(3);
+   }
+}
+
+function taunt5(%val)
+{
+   if(%val && $Pref::Chat::LineTime > 0)
+   {
+      playTaunt(4);
+   }
+}
+
+function taunt6(%val)
+{
+   if(%val && $Pref::Chat::LineTime > 0)
+   {
+      playTaunt(5);
+   }
+}
+
 //------------------------------------------------------------------------------
 // Dubuging Functions
 //------------------------------------------------------------------------------
@@ -688,6 +737,14 @@ moveMap.bind( mouse, button0, mouseFire );
 moveMap.bind( mouse, button1, altTrigger );
 moveMap.bind( mouse, xaxis, mouseYaw );
 moveMap.bind( mouse, yaxis, mousePitch );
+
+// taunts by connie
+moveMap.bind( keyboard, 1, taunt1 );
+moveMap.bind( keyboard, 2, taunt2 );
+moveMap.bind( keyboard, 3, taunt3 );
+moveMap.bind( keyboard, 4, taunt4 );
+moveMap.bind( keyboard, 5, taunt5 );
+moveMap.bind( keyboard, 6, taunt6 );
 
 // gamepad
 if (isPCBuild())
