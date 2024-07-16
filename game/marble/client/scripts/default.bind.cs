@@ -463,7 +463,17 @@ function toggleCamera(%val)
 {
    setMvExtras();
    if (%val)
-      commandToServer('ToggleCamera');
+   {
+      if ($testcheats && !$Client::connectedMultiplayer) 
+      {
+         commandToServer('ToggleCamera');
+      }
+
+      if ($Client::connectedMultiplayer)
+      {
+         commandToServer('ToggleSpecMode');
+      }
+   }
 }
 
 function toggleFPSDisplay(%val)

@@ -18,13 +18,11 @@ function serverCmdToggleCamera(%client)
    {
       %control = %client.camera;
       %control.mode = toggleCameraFly;
-      spectatorHud(false);
    }
    else
    {
       %control = %client.player;
       %control.mode = observerFly;
-      spectatorHud(true);
    }
    %client.setControlObject(%control);
 }
@@ -146,4 +144,32 @@ function spectatorHud(%state)
       PlayGui.setMaxGems(PlayGui.maxGems);
       PlayGui.setPoints(PlayGui.points);
    }
+}
+
+//Spectating Logic ~Connie
+function serverCmdToggleSpecMode(%client)
+{
+   %control = %client.getControlObject();
+   if (%control == %client.player)
+   {
+      %control = %client.camera;
+      spectatorHud(false);
+
+      //Delete the Player Marble if they start spectating
+      if (isObject(%client.player)) 
+      {
+         %client.player.delete();
+         %client.player = "";
+      }
+   }
+   else
+   {
+      %control = %client.player;
+      spectatorHud(true);
+
+      //Respawn the Player Marble if the player decides to stop spectating
+      %client.spawnPlayer();
+   }
+
+   %client.setControlObject(%control);
 }
