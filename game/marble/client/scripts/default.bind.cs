@@ -476,6 +476,18 @@ function toggleCamera(%val)
    }
 }
 
+function toggleplayerSpec(%val)
+{
+   setMvExtras();
+   if (%val) 
+   {
+      if ($Client::connectedMultiplayer)
+      {
+         commandtoServer('PrepareSpecPlayer');
+      }
+   }
+}
+
 function toggleFPSDisplay(%val)
 {
    setMvExtras();
@@ -670,6 +682,7 @@ moveMap.bind( keyboard, w, moveforward );
 moveMap.bind( keyboard, s, movebackward );
 moveMap.bind( keyboard, space, jumpOrStart );
 moveMap.bind(keyboard, "alt c", toggleCamera);
+moveMap.bind(keyboard, c, toggleplayerSpec);
 //moveMap.bind( keyboard, F3, startRecordingDemo );
 //moveMap.bind( keyboard, F4, stopRecordingDemo );
 //moveMap.bindCmd( keyboard, o, "", "pauseToggle(0);" );

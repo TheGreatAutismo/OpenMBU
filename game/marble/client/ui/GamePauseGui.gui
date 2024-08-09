@@ -108,6 +108,12 @@ function GamePauseGui::onSleep(%this)
    
    if (%this.resumingGame)
       moveMap.push();
+
+   // For Spectator Mode ~ Connie
+   if (%this.resumingGame && $Client::connectedMultiplayer)
+   {
+      PlayGui.SpectatorHudTog($Client::isspectating);
+   }
 }
 
 function GamePauseGui::onA()

@@ -995,6 +995,9 @@ function clientCmdSetGameState(%state, %data)
       // handle multiplayer stats stuff      
       if (%state $= "ready")
       {
+         // Part of Spectator Mode ~ Connie
+         StartStateSetSpectate();
+
          // clear any JoinInProgress users from prior sessions
          if (isObject(StatsJoinInProgressClients))
             StatsJoinInProgressClients.clear();

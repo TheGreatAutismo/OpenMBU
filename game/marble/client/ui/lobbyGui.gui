@@ -861,8 +861,17 @@ function LobbyGui::onA(%this)
       XMessagePopupDlg.show(0, $Text::DemoUpsellMP7, $Text::OK);
       return;
    }   
-      
-   clientSetReadyStatus(!ServerConnection.ready);   
+
+   // For Spectator Mode ~ Connie  
+   if (ServerConnection.ready)
+   {
+      clientSetReadyStatus(!ServerConnection.ready);   
+   }
+   else
+   {
+      LobbySpectateDlg.show();
+   }
+   //----------------------------
    
    if (!isPCBuild() && %this.hosting && XBLiveIsRanked() && ServerConnection.ready && ClientGroup.getCount() == 1)
    {

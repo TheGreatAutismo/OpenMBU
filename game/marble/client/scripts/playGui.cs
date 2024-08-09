@@ -103,6 +103,13 @@ function PlayGui::onWake(%this)
    }
 
    sendAutosplitterData("loading finished");
+
+   // Part of Spectator Mode
+   // When a Control Object is changed, PlayGui::onWake is called. This is why this is here. ~Connie
+   if ($Client::connectedMultiplayer)
+   {
+      PlayGui.SpectatorHudTog($Client::isspectating);
+   }
 }
 
 function PlayGui::show(%this)
