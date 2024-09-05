@@ -1287,6 +1287,9 @@ function GameConnection::onOutOfBounds(%this)
    if ($Game::State $= "End" || $Game::State $= "wait")
       return;
 
+   if (%this.isspectating)
+      return;
+
    // Lose a gem if you fall off in Sumo
 //   if (MissionInfo.gameMode $= "Sumo" || MissionInfo.gameMode $= "Scrum")
 //   {

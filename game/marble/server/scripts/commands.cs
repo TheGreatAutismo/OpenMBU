@@ -120,17 +120,11 @@ function serverCmdStopTalking(%client)
 
 //----------------------------------------------------------------------------------
 // Spectator Mode - Work in Progress
-// Worked on by Connie and Yoshicraft224
+// Worked on by Connie, Yoshicraft224, and A-Game
 //----------------------------------------------------------------------------------
 // TODO list:
 // Figure out how to make the timer not stop when you spectate (only visual bug)
-// Figure out how to make the player not go OOB when they switch to spectator mode
 // General code optimizations where possible & testing for bugs
-//
-// Separate the Player Orbiting Toggle function from the Player Orbit Cycling function
-// (a.k.a. one button to toggle between free fly and orbiting someone while spectating,
-// and another button for cycling between players while in orbit mode)
-// Current function for both is currently: serverCmdPrepareSpecPlayer
 //----------------------------------------------------------------------------------
 // Code related to Spectator Mode is also present in:
 // default.bind.cs
@@ -144,15 +138,21 @@ function serverCmdStopTalking(%client)
 // value stored by the Server. Use %client.isspectating for server commands/server sided
 // stuff, and $Client::isspectating for local commands.
 //----------------------------------------------------------------------------------
+// To check if a player is orbiting, use $Client::isorbiting locally, 
+// and %client.isorbiting on the server.
+//----------------------------------------------------------------------------------
 // Keybinds:
 // alt+c - toggle spectator mode on and off
-// c - toggle between free fly and player orbiting modes - toggle between players in orbiting (to be separated)
+// c - toggle between free fly and player orbiting modes
+// a - toggle previous player in orbiting
+// d - toggle next player in orbiting
 //----------------------------------------------------------------------------------
 
 // Set the value of isspectating locally - when in need to do stuff locally only
-function clientCmdSpectateStatusLocally(%state)
+function clientCmdSpectateStatusLocally(%state, %orbit)
 {
    $Client::isspectating = %state;
+   $Client::isorbiting = %orbit;
 }
 
 // This handles the way the HUD is modified when you spectate or when you stop spectating
@@ -176,51 +176,43 @@ function StartStateSetSpectate()
 function serverCmdSetSpectateStatus(%client, %state)
 {
    %client.isspectating = %state;
-   commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating);
+   commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating, %client.isorbiting);
 }
 
 //Spectating Logic is here. ~Connie
 function serverCmdToggleSpecMode(%client)
 {
-   %control = %client.getControlObject();
-
    if (!isObject(%client.speccamera))
    {
       CreateSpecCam(%client);
    }
 
-   if (%control == %client.player)
+   if (%client.getControlObject() == %client.player)
    {
-      %control = %client.speccamera;
-
       //Delete the Player Marble if they start spectating
-      if (isObject(%client.player)) 
-      {
-         %client.player.delete();
-         %client.player = "";
+      %client.isspectating = true;
+      %client.player.delete();
+      %client.player = "";
 
-         %client.isspectating = true;
-      }
+      //And use the camera instead
+      %client.setControlObject(%client.speccamera);
    }
    else
    {
-      %control = %client.player;
-
       //Respawn the Player Marble if the player decides to stop spectating
-      %client.spawnPlayer();
-
       %client.isspectating = false;
+      %client.isorbiting = false;
+      %client.spawnPlayer();
    }
 
-   commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating);
-   %client.setControlObject(%control);
+   commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating, %client.isorbiting);
 }
 
 function serverCmdPrepareSpecPlayer(%client)
 {
-   if (%client.playerspectating $= "" || %client.orderofplayerspectating $= "")
+   if (%client.playerspectating $= "")
    {
-      serverCmdSpecPlayer(%client);
+      serverCmdNextSpecPlayer(%client);
    }
    else
    {
@@ -228,83 +220,79 @@ function serverCmdPrepareSpecPlayer(%client)
    }
 }
 
-//The function where someone can orbit around a player and spectate them that way.
-function serverCmdSpecPlayer(%client)
+//Choose previous person to orbit
+function serverCmdPrevSpecPlayer(%client)
 {
-   //Don't run this at all if you're not spectating
-   if (%client.isspectating)
+   if (!%client.isspectating)
+      return;
+
+   %client.playerspectating = "";
+   %wrap = false;
+   %top = ClientGroup.getCount() - 1;
+
+   while (!isObject(%client.playerspectating.player))
    {
-      //Set the value.
-      %client.orderofplayerspectating += 1;
+       %client.orbitspecindex --;
 
-      //Don't get a value greater than the number of players in the server
-      if (%client.orderofplayerspectating >= ClientGroup.getCount())
+      //Wrap around if index is too low
+      if (%client.orbitspecindex < 0)
       {
-         %client.orderofplayerspectating = 0;
+         %client.orbitspecindex = %top;
+         if (%wrap)
+         {
+            //Didn't find one
+            break;
+         }
+         %wrap = true;
       }
 
-      //Start from our value, check every player
-      for (%i = %client.orderofplayerspectating; %i < ClientGroup.getCount(); %i++)
-      {
-         //If it doesn't exist, don't consider it.
-         if (!isObject(ClientGroup.getObject(%i)))
-         {
-            continue;
-         }
-
-         if (ClientGroup.getObject(%i).isspectating)
-         {
-            continue; //Skip if spectating.
-         }
-         else
-         {
-            %client.orderofplayerspectating = %i;
-            %client.playerspectating = ClientGroup.getObject(%i);
-            break; //We found one, break the sequence!
-         }
-
-         //If we got to the last player in the hierarchy and he's spectating, do it all from 0
-         if (%i == ClientGroup.getCount() && ClientGroup.getObject(%i).isspectating)
-         {
-            for (%j = 0; %j < ClientGroup.getCount(); %j++)
-            {
-               //If it doesn't exist, don't consider it.
-               if (!isObject(ClientGroup.getObject(%j)))
-               {
-                  continue;
-               }
-
-               if (ClientGroup.getObject(%j).isspectating)
-               {
-                  continue; //Skip if spectating.. again.
-               }
-               else
-               {
-                  if (isObject(ClientGroup.getObject(%j))) 
-                  {
-                     %client.orderofplayerspectating = %j;
-                     %client.playerspectating = ClientGroup.getObject(%j);
-                     break; //Finally a player to spectate, break the sequence!
-                  }
-               }
-            }
-         }
-
-         if (%client.playerspectating.isspectating || !isObject(%client.playerspectating))
-         {
-            //If we got here, there truly is no player to spectate.
-            %client.orderofplayerspectating = "";
-            %client.playerspectating = "";
-            %client.speccamera.setFlyMode();
-         }
-      }
-
-      //Pased all the checks? Good, spectate that mf'er
-      if (%client.orderofplayerspectating !$= "" && %client.playerspectating !$= "") 
-      {
-         %client.speccamera.setOrbitMode(%client.playerspectating.player, %client.playerspectating.player.getTransform(), 0.5, 4.5, 4.5);
-      }
+      %client.playerspectating = ClientGroup.getObject(%client.orbitspecindex);
    }
+   if (%client.orbitspecindex !$= "" && %client.playerspectating.player !$= "") 
+   {
+      %client.speccamera.setOrbitMode(%client.playerspectating.player, %client.playerspectating.player.getTransform(), 0.5, 4.5, 4.5);
+      %client.isorbiting = true;
+      commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating, %client.isorbiting);
+   } 
+   else 
+      serverCmdStopSpecPlayer(%client);
+}
+
+//Choose next person to orbit
+function serverCmdNextSpecPlayer(%client)
+{
+   if (!%client.isspectating)
+      return;
+
+   %client.playerspectating = "";
+   %wrap = false;
+
+   while (!isObject(%client.playerspectating.player))
+   {
+       %client.orbitspecindex ++;
+
+      //Wrap around if index is too low
+      if (%client.orbitspecindex > ClientGroup.getCount())
+      {
+         %client.orbitspecindex = 0;
+         if (%wrap)
+         {
+            //Didn't find one
+            break;
+         }
+         %wrap = true;
+      }
+
+      %client.playerspectating = ClientGroup.getObject(%client.orbitspecindex);
+   }
+   if (%client.orbitspecindex !$= "" && %client.playerspectating.player !$= "") 
+   {
+      %client.speccamera.setOrbitMode(%client.playerspectating.player, %client.playerspectating.player.getTransform(), 0.5, 4.5, 4.5);
+      %client.isorbiting = true;
+      commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating, %client.isorbiting);
+   }
+   else 
+      serverCmdStopSpecPlayer(%client);
 }
 
 //The function to get out of orbiting a player when spectating.
@@ -313,11 +301,9 @@ function serverCmdStopSpecPlayer(%client)
    if (%client.isspectating)
    {
       //Reset values so when we start spectating other players in orbit mode again, we can rerun everything.
-      if (%client.playerspectating !$= "" || %client.orderofplayerspectating !$= "")
-      {
-         %client.playerspectating = "";
-         %client.orderofplayerspectating = "";
-      }
+      %client.playerspectating = "";
+      %client.orbitspecindex = "";
+      %client.isorbiting = false;
 
       //Set 'em free.
       %client.speccamera.setFlyMode();

@@ -189,12 +189,20 @@ function setSpeed(%speed)
 
 function moveleft(%val)
 {
+   if ($Client::isorbiting && %val) {
+      commandToServer('PrevSpecPlayer');
+      return;
+   }
    setMvExtras();
    $mvLeftAction = %val;
 }
 
 function moveright(%val)
 {
+   if ($Client::isorbiting && %val) {
+      commandToServer('NextSpecPlayer');
+      return;
+   }
    setMvExtras();
    $mvRightAction = %val;
 }
