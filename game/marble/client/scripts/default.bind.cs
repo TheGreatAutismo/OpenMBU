@@ -491,7 +491,7 @@ function toggleplayerSpec(%val)
    {
       if ($Client::connectedMultiplayer)
       {
-         commandtoServer('PrepareSpecPlayer');
+         commandtoServer('ToggleOrbitMode');
       }
    }
 }

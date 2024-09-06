@@ -149,7 +149,7 @@ function serverCmdStopTalking(%client)
 //----------------------------------------------------------------------------------
 
 // Set the value of isspectating locally - when in need to do stuff locally only
-function clientCmdSpectateStatusLocally(%state, %orbit)
+function clientCmdSpectateStatus(%state, %orbit)
 {
    $Client::isspectating = %state;
    $Client::isorbiting = %orbit;
@@ -157,7 +157,7 @@ function clientCmdSpectateStatusLocally(%state, %orbit)
 
 // This handles the way the HUD is modified when you spectate or when you stop spectating
 // There's probably a better way of handling this, but this gets the joj done ~Connie
-function PlayGui::SpectatorHudTog(%this, %state)
+function SpectatorHudTog(%state)
 {
    HUD_ShowPowerUp.setVisible(!%state);
    BoostBar.setVisible(!%state);   
@@ -166,7 +166,7 @@ function PlayGui::SpectatorHudTog(%this, %state)
 // Called when the Game State goes to "Start". Will check for the client's "isspectating" value, and then act accordingly.
 function StartStateSetSpectate()
 {
-   if ($Client::isspectating == true)
+   if ($Client::isspectating)
    {
       commandtoServer('ToggleSpecMode');
    }
@@ -176,7 +176,7 @@ function StartStateSetSpectate()
 function serverCmdSetSpectateStatus(%client, %state)
 {
    %client.isspectating = %state;
-   commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating, %client.isorbiting);
+   commandtoClient(%client, 'SpectateStatus', %client.isspectating, %client.isorbiting);
 }
 
 //Spectating Logic is here. ~Connie
@@ -205,10 +205,10 @@ function serverCmdToggleSpecMode(%client)
       %client.spawnPlayer();
    }
 
-   commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating, %client.isorbiting);
+   commandtoClient(%client, 'SpectateStatus', %client.isspectating, %client.isorbiting);
 }
 
-function serverCmdPrepareSpecPlayer(%client)
+function serverCmdToggleOrbitMode(%client)
 {
    if (%client.playerspectating $= "")
    {
@@ -252,7 +252,7 @@ function serverCmdPrevSpecPlayer(%client)
    {
       %client.speccamera.setOrbitMode(%client.playerspectating.player, %client.playerspectating.player.getTransform(), 0.5, 4.5, 4.5);
       %client.isorbiting = true;
-      commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating, %client.isorbiting);
+      commandtoClient(%client, 'SpectateStatus', %client.isspectating, %client.isorbiting);
    } 
    else 
       serverCmdStopSpecPlayer(%client);
@@ -289,7 +289,7 @@ function serverCmdNextSpecPlayer(%client)
    {
       %client.speccamera.setOrbitMode(%client.playerspectating.player, %client.playerspectating.player.getTransform(), 0.5, 4.5, 4.5);
       %client.isorbiting = true;
-      commandtoClient(%client, 'SpectateStatusLocally', %client.isspectating, %client.isorbiting);
+      commandtoClient(%client, 'SpectateStatus', %client.isspectating, %client.isorbiting);
    }
    else 
       serverCmdStopSpecPlayer(%client);
@@ -316,6 +316,4 @@ function CreateSpecCam(%client)
    %client.speccamera = new Camera() {
       dataBlock = Observer;
    };
-
-   MissionCleanup.add(%client.newcamera);
 }

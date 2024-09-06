@@ -108,7 +108,7 @@ function PlayGui::onWake(%this)
    // When a Control Object is changed, PlayGui::onWake is called. This is why this is here. ~Connie
    if ($Client::connectedMultiplayer)
    {
-      PlayGui.SpectatorHudTog($Client::isspectating);
+      SpectatorHudTog($Client::isspectating);
    }
 }
 

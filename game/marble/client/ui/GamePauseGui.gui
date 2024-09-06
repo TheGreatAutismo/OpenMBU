@@ -112,7 +112,7 @@ function GamePauseGui::onSleep(%this)
    // For Spectator Mode ~ Connie
    if (%this.resumingGame && $Client::connectedMultiplayer)
    {
-      PlayGui.SpectatorHudTog($Client::isspectating);
+      SpectatorHudTog($Client::isspectating);
    }
 }
 
