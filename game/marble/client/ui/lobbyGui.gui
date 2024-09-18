@@ -311,8 +311,8 @@ function LobbyGui::updateHostingStatus(%this)
 	   
 	   if (%this.hosting && !isDemoLaunch() && !XBLiveIsRanked()) {
 	      RootGui.setLS($Text::ChangeLevels);
-          RootGui.setX($Text::LobbyHostInviteVisibility);
-       }
+         RootGui.setX($Text::LobbyHostServerSettings);
+      }
    }
 }
 
@@ -736,12 +736,11 @@ function LobbyGui::setHostInfo(%this, %hostName, %gameMode, %mapname, %priSlotsU
    			$Text::Comma SPC $Text::LobbyHostPublicSlots @ $Text::Colon SPC 
    			%pubSlotsUsed @ $Text::Slash @ %pubSlotsFree + %pubSlotsUsed;
             
-   if ($pref::Lobby::InviteVisibility)
-       LobbyGuiHostGameInfo.setText(LobbyGuiHostGameInfo.beforeText @ 
-                ($Server::Hosting ? ($Text::Comma SPC $Text::LobbyHostInviteCode @ $Text::Colon SPC
-                $Server::InviteCode @ "<font:Arial Bold:20> ") : ""));
+   if (checkInviteVisibility())
+      LobbyGuiHostGameInfo.setText(LobbyGuiHostGameInfo.beforeText @
+         ($Text::Comma SPC $Text::LobbyHostInviteCode @ $Text::Colon SPC ServerConnection.inviteCode @ "<font:Arial Bold:20> "));
    else
-   	   LobbyGuiHostGameInfo.setText(LobbyGuiHostGameInfo.beforeText);
+   	LobbyGuiHostGameInfo.setText(LobbyGuiHostGameInfo.beforeText);
   
    LobbyGuiSelection.clear();
    LobbyGuiSelection.setButtonsEnabled(%this.hosting);
@@ -1008,14 +1007,7 @@ function LobbyGuiPlayerList::onSelect( %this, %id, %text )
 
 function LobbyGui::onX(%this)
 {
-    $pref::Lobby::InviteVisibility = !$pref::Lobby::InviteVisibility;
-
-   if ($pref::Lobby::InviteVisibility)
-       LobbyGuiHostGameInfo.setText(LobbyGuiHostGameInfo.beforeText @ 
-                ($Server::Hosting ? ($Text::Comma SPC $Text::LobbyHostInviteCode @ $Text::Colon SPC
-                $Server::InviteCode @ "<font:Arial Bold:20> ") : ""));
-   else
-   	   LobbyGuiHostGameInfo.setText(LobbyGuiHostGameInfo.beforeText);
+   RootGui.setContent(ServerSettingsGui);
 }
 
 function LobbyGui::onY(%this)
@@ -1117,4 +1109,10 @@ function lbg_test()
 function lbg_reload()
 {
    rGui(LobbyGui);
+}
+
+function checkInviteVisibility()
+{
+   if ($Server::Hosting) return serverConnection.inviteVisibility != 0;
+   else                  return serverConnection.inviteVisibility == 2;
 }

@@ -49,18 +49,20 @@ function handleClientSetServerParams(%msgType, %msgString, %message)
    if (isObject(ServerConnection))
    {
       // unpack server params data
-      ServerConnection.hostName = getRecord(%message, 0);
-      ServerConnection.isMultiplayer = %isMultiplayer;
-      ServerConnection.gameModeId = getRecord(%message, 2);
-      ServerConnection.missionId = getRecord(%message, 3);
-      ServerConnection.gameCounts = getRecord(%message, 4);
-      ServerConnection.pubSlotsFree = getRecord(%message, 5);
-      ServerConnection.pubSlotsUsed = getRecord(%message, 6);
-      ServerConnection.priSlotsFree = getRecord(%message, 7);
-      ServerConnection.priSlotsUsed = getRecord(%message, 8);
-      ServerConnection.isRanked = getRecord(%message, 9);
-      ServerConnection.guid = getRecord(%message, 10);
-      ServerConnection.missionName = getRecord(%message, 11);
+      ServerConnection.hostName         = getRecord(%message, 0);
+      ServerConnection.isMultiplayer    = %isMultiplayer;
+      ServerConnection.gameModeId       = getRecord(%message, 2);
+      ServerConnection.missionId        = getRecord(%message, 3);
+      ServerConnection.gameCounts       = getRecord(%message, 4);
+      ServerConnection.pubSlotsFree     = getRecord(%message, 5);
+      ServerConnection.pubSlotsUsed     = getRecord(%message, 6);
+      ServerConnection.priSlotsFree     = getRecord(%message, 7);
+      ServerConnection.priSlotsUsed     = getRecord(%message, 8);
+      ServerConnection.isRanked         = getRecord(%message, 9);
+      ServerConnection.guid             = getRecord(%message, 10);
+      ServerConnection.missionName      = getRecord(%message, 11);
+      ServerConnection.inviteCode       = getRecord(%message, 12);
+      ServerConnection.inviteVisibility = getRecord(%message, 13);
             
       // set flag indicating that server params are present
       ServerConnection.hasParams = true;

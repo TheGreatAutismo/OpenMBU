@@ -26,18 +26,20 @@ function updateServerParams()
 {
    // build the server params data
    %message = "";
-   %message = %message @ $Player::Name @ "\n"; //  host name
-   %message = %message @ $Server::ServerType @ "\n"; //  server type
-   %message = %message @ $Server::GameModeId @ "\n"; //  game mode
-   %message = %message @ $Server::MissionId  @ "\n"; //  mission index
-   %message = %message @ gameCountsForRankings() @ "\n"; //  does it count for rankings 
-   %message = %message @ serverGetPublicSlotsFree() @ "\n"; //  public slots avail
-   %message = %message @ serverGetPublicSlotsUsed() @ "\n"; //  public slots used
-   %message = %message @ serverGetPrivateSlotsFree() @ "\n"; //  private slots avail
-   %message = %message @ serverGetPrivateSlotsUsed() @ "\n"; //  private slots used
+   %message = %message @ $Player::Name                      @ "\n"; //  host name
+   %message = %message @ $Server::ServerType                @ "\n"; //  server type
+   %message = %message @ $Server::GameModeId                @ "\n"; //  game mode
+   %message = %message @ $Server::MissionId                 @ "\n"; //  mission index
+   %message = %message @ gameCountsForRankings()            @ "\n"; //  does it count for rankings 
+   %message = %message @ serverGetPublicSlotsFree()         @ "\n"; //  public slots avail
+   %message = %message @ serverGetPublicSlotsUsed()         @ "\n"; //  public slots used
+   %message = %message @ serverGetPrivateSlotsFree()        @ "\n"; //  private slots avail
+   %message = %message @ serverGetPrivateSlotsUsed()        @ "\n"; //  private slots used
    %message = %message @ (!isPCBuild() && XBLiveIsRanked()) @ "\n"; // ranked?
-   %message = %message @ $Server::MissionGuid  @ "\n"; //  mission guid
-   %message = %message @ $Server::MissionName  @ "\n"; //  mission name
+   %message = %message @ $Server::MissionGuid               @ "\n"; //  mission guid
+   %message = %message @ $Server::MissionName               @ "\n"; //  mission name
+   %message = %message @ $Server::InviteCode                @ "\n"; //  invite code
+   %message = %message @ $pref::Lobby::InviteVisibility     @ "\n"; //invite visibility
    
    // update the server parameters on all clients
    messageAll('MsgClientSetServerParams', "", %message);

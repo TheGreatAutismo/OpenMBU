@@ -123,6 +123,7 @@ function initClient()
    exec("./ui/CreateGameGui.gui");
    exec("./ui/LobbyGui.gui");
    exec("./ui/LobbyPopupDlg.gui");
+   exec("./ui/ServerSettingsGui.gui");
    exec("./ui/lbMenuGui.gui");
    exec("./ui/LevelPreviewGui.gui");
    exec("./ui/LevelScoresGui.gui");

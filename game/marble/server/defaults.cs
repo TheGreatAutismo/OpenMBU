@@ -43,6 +43,7 @@ $Pref::Server::FloodProtectionEnabled = 1;
 $Pref::Server::MaxChatLen = 120;
 
 
+$Server::AbsMinPlayers = 2;
 $Server::AbsMaxPlayers = 8;
 $Server::HighBandwidthMin = 100000; // minimum kilo bits per second up and down required for "high bandwidth" (5,6 players with no warning)
 $Server::MaxPlayers_LowBandwidth = 5;
