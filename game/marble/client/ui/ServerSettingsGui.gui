@@ -51,7 +51,7 @@ function ServerSettingsGui::show(%this, %backGui)
     %this.inviteVisibilityIndex = 3;
 
     //Max Players and Private Slots shouldn't wrap around from highest to lowest or vice versa
-    ServerSettingsList.setOptionWrap(%this.maxPlayersIndex, false);
+    ServerSettingsList.setOptionWrap(%this.maxPlayersIndex,   false);
     ServerSettingsList.setOptionWrap(%this.privateSlotsIndex, false);
 
     //Set each option row to start with the current pref selected

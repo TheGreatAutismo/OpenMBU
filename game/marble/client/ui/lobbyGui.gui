@@ -1007,6 +1007,7 @@ function LobbyGuiPlayerList::onSelect( %this, %id, %text )
 
 function LobbyGui::onX(%this)
 {
+   sfxPlay(AudioButtonDown);
    RootGui.setContent(ServerSettingsGui);
 }
 
